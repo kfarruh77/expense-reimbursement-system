@@ -1,7 +1,5 @@
 const express = require("express");
 const router = express.Router();
-const userDAO = require("../repository/users-dao");
-const bcrypt = require("bcrypt");
 const jwtUtil = require("../util/jwtUtil");
 
 router.get("/dashboard", async (req, res) => {

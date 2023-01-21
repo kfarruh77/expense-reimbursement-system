@@ -3,6 +3,9 @@ const router = express.Router();
 const userDAO = require("../repository/users-dao");
 const bcrypt = require("bcrypt");
 const jwtUtil = require("../util/jwtUtil");
+const validateInput = require("../util/authUtil");
+
+router.use(validateInput);
 
 router.post("/register", async (req, res) => {
   const email = req.body.email;
@@ -32,7 +35,6 @@ router.post("/login", async (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
   const user = await userDAO.getUserByEmail(email);
-
   if (!user.Item) {
     return res.status(400).send("User does not exist");
   }

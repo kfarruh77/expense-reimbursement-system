@@ -1,7 +1,6 @@
 const express = require("express");
 const app = express();
 const PORT = 3000;
-const bcrypt = require("bcrypt");
 const bodyParser = require("body-parser");
 const authRouter = require("./routes/authRouter");
 const employeeRouter = require("./routes/employeeRouter");
