@@ -24,6 +24,63 @@ const submitTicket = (ticket) => {
   return docClient.put(params).promise();
 };
 
+const getTicketsByStatus = (status) => {
+  const params = {
+    TableName: table,
+    IndexName: "status-index",
+    KeyConditionExpression: "#s = :val",
+    ExpressionAttributeNames: {
+      "#s": "status",
+    },
+    ExpressionAttributeValues: {
+      ":val": status,
+    },
+  };
+
+  let items;
+
+  do {
+    items = docClient.query(params).promise();
+
+    //items.Items.forEach((item) => results.push(item));
+    params.ExclusiveStarterKey = items.LastEvaluatedKey;
+  } while (typeof items.LastEvaluatedKey !== "undefined");
+
+  return items;
+};
+
+const updateTicketStatus = (id, status) => {
+  const params = {
+    TableName: table,
+    Key: {
+      ticket_id: id,
+    },
+    UpdateExpression: "set #s = :val",
+    ExpressionAttributeNames: {
+      "#s": "status",
+    },
+    ExpressionAttributeValues: {
+      ":val": status,
+    },
+  };
+
+  return docClient.update(params).promise();
+};
+
+const getTicketById = (id) => {
+  const params = {
+    TableName: table,
+    Key: {
+      ticket_id: id,
+    },
+  };
+
+  return docClient.get(params).promise();
+};
+
 module.exports = {
   submitTicket,
+  getTicketsByStatus,
+  updateTicketStatus,
+  getTicketById,
 };

@@ -5,7 +5,7 @@ const ticketDAO = require("../repository/ticket-dao");
 
 router.get("/dashboard", validateEmployee, (req, res) => {
   res.status(200).send({
-    message: `welcome employee ${req.email}`,
+    message: `Welcome employee ${req.email}`,
   });
 });
 
