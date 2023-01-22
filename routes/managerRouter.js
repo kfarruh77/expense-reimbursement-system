@@ -15,6 +15,14 @@ router.get("/viewTickets", validateManager, async (req, res) => {
 });
 
 router.put("/validateTicket/:id", validateManager, async (req, res) => {
+  if (
+    !req.body.status ||
+    (req.body.status !== "denied" && req.body.status !== "approved")
+  ) {
+    return res
+      .status(400)
+      .send("Please provide a proper status (denied/approved)");
+  }
   const item = await ticketDAO.getTicketById(req.params.id);
   const data = item.Item;
   if (data) {

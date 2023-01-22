@@ -13,6 +13,10 @@ router.post("/submitTicket", validateEmployee, async (req, res) => {
   const amount = req.body.amount;
   const description = req.body.description;
 
+  if (!(typeof amount === "number") || !description) {
+    return res.status(400).send("Please provide amount and description");
+  }
+
   try {
     await ticketDAO.submitTicket({
       amount,
@@ -21,7 +25,7 @@ router.post("/submitTicket", validateEmployee, async (req, res) => {
     });
     res.status(201).send("Ticket created");
   } catch {
-    res.status(500).send("error");
+    res.status(500).send("Error");
   }
 });
 
@@ -35,6 +39,15 @@ router.get("/viewTickets", validateEmployee, async (req, res) => {
       res.status(500).send("Error");
     }
   } else {
+    if (
+      req.query.status !== "pending" &&
+      req.query.status !== "denied" &&
+      req.query.status !== "approved"
+    ) {
+      return res
+        .status(400)
+        .send("Please provide a proper status (pending/approved/denied)");
+    }
     try {
       const items = await ticketDAO.getTicketsByEmail(
         req.email,

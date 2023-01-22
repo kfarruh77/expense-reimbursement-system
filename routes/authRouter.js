@@ -9,8 +9,15 @@ router.post("/register", validateInput, async (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
   let role = req.body.role;
+
   if (!role) {
     role = "employee";
+  }
+
+  if (role !== "employee" && role !== "manager") {
+    return res
+      .status(400)
+      .send("Please provide a proper role (employee/manager)");
   }
 
   const data = await userDAO.getUserByEmail(email);
@@ -24,7 +31,7 @@ router.post("/register", validateInput, async (req, res) => {
       await userDAO.registerUsers({ email, password: hashPassword, role });
       res.status(201).send("User created");
     } catch {
-      res.status(500).send("error");
+      res.status(500).send("Error");
     }
   }
 });
@@ -41,14 +48,14 @@ router.post("/login", validateInput, async (req, res) => {
       const token = jwtUtil.createJWT(user.Item.email, user.Item.role);
 
       res.status(200).send({
-        message: `Welcome user ${user.Item.email} ${user.Item.role}`,
+        message: `Welcome ${user.Item.role} ${user.Item.email}`,
         token: token,
       });
     } else {
       res.send(`Email and password do not match`);
     }
   } catch {
-    res.status(500).send("ERROR2");
+    res.status(500).send("Error");
   }
 });
 
