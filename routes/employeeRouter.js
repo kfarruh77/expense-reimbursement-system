@@ -25,4 +25,27 @@ router.post("/submitTicket", validateEmployee, async (req, res) => {
   }
 });
 
+router.get("/viewTickets", validateEmployee, async (req, res) => {
+  if (Object.keys(req.query).length === 0) {
+    try {
+      const items = await ticketDAO.getTicketsByEmail(req.email);
+      const data = items.Items;
+      res.status(200).send(data);
+    } catch {
+      res.status(500).send("Error");
+    }
+  } else {
+    try {
+      const items = await ticketDAO.getTicketsByEmail(
+        req.email,
+        req.query.status
+      );
+      const data = items.Items;
+      res.status(200).send(data);
+    } catch {
+      res.status(500).send("Error");
+    }
+  }
+});
+
 module.exports = router;

@@ -38,11 +38,8 @@ const getTicketsByStatus = (status) => {
   };
 
   let items;
-
   do {
     items = docClient.query(params).promise();
-
-    //items.Items.forEach((item) => results.push(item));
     params.ExclusiveStarterKey = items.LastEvaluatedKey;
   } while (typeof items.LastEvaluatedKey !== "undefined");
 
@@ -78,9 +75,51 @@ const getTicketById = (id) => {
   return docClient.get(params).promise();
 };
 
+const getTicketsByEmail = (email, status = "") => {
+  let params;
+  if (!status) {
+    params = {
+      TableName: table,
+      IndexName: "submittedBy-index",
+      KeyConditionExpression: "#sB = :val",
+      ExpressionAttributeNames: {
+        "#sB": "submittedBy",
+      },
+      ExpressionAttributeValues: {
+        ":val": email,
+      },
+    };
+  } else {
+    params = {
+      TableName: table,
+      IndexName: "submittedBy-index",
+      KeyConditionExpression: "#sB = :val",
+      FilterExpression: "#s = :val2",
+
+      ExpressionAttributeNames: {
+        "#sB": "submittedBy",
+        "#s": "status",
+      },
+      ExpressionAttributeValues: {
+        ":val": email,
+        ":val2": status,
+      },
+    };
+  }
+
+  let items;
+  do {
+    items = docClient.query(params).promise();
+    params.ExclusiveStarterKey = items.LastEvaluatedKey;
+  } while (typeof items.LastEvaluatedKey !== "undefined");
+
+  return items;
+};
+
 module.exports = {
   submitTicket,
   getTicketsByStatus,
   updateTicketStatus,
   getTicketById,
+  getTicketsByEmail,
 };
