@@ -1,31 +1,27 @@
 const express = require("express");
 const router = express.Router();
-const jwtUtil = require("../util/jwtUtil");
+const validateEmployee = require("../util/employeeUtil");
+const ticketDAO = require("../repository/ticket-dao");
 
-router.get("/dashboard", async (req, res) => {
-  let token;
-  if (req.headers.authorization) {
-    token = req.headers.authorization.split(" ")[1];
-  } else {
-    return res.status(401).send({
-      message: "Not logged in",
-    });
-  }
+router.get("/dashboard", validateEmployee, (req, res) => {
+  res.status(200).send({
+    message: `welcome employee ${req.email}`,
+  });
+});
+
+router.post("/submitTicket", validateEmployee, async (req, res) => {
+  const amount = req.body.amount;
+  const description = req.body.description;
+
   try {
-    const payload = await jwtUtil.verifyTokenAndPayload(token);
-    if (payload.role === "employee") {
-      res.status(200).send({
-        message: `welcome employee ${payload.email}`,
-      });
-    } else {
-      res.status(401).send({
-        message: `You are not an employee. You are a ${payload.role}`,
-      });
-    }
-  } catch (err) {
-    res.status(401).send({
-      message: "Token verification failure",
+    await ticketDAO.submitTicket({
+      amount,
+      description,
+      email: req.email,
     });
+    res.status(201).send("Ticket created");
+  } catch {
+    res.status(500).send("error");
   }
 });
 

@@ -1,6 +1,6 @@
 const validator = require("email-validator");
 
-const vaildateInput = function (req, res, next) {
+const validateInput = function (req, res, next) {
   if (validator.validate(req.body.email) && req.body.password) {
     next();
   } else {
@@ -8,4 +8,4 @@ const vaildateInput = function (req, res, next) {
   }
 };
 
-module.exports = vaildateInput;
+module.exports = validateInput;

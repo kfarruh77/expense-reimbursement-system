@@ -5,9 +5,7 @@ const bcrypt = require("bcrypt");
 const jwtUtil = require("../util/jwtUtil");
 const validateInput = require("../util/authUtil");
 
-router.use(validateInput);
-
-router.post("/register", async (req, res) => {
+router.post("/register", validateInput, async (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
   let role = req.body.role;
@@ -31,7 +29,7 @@ router.post("/register", async (req, res) => {
   }
 });
 
-router.post("/login", async (req, res) => {
+router.post("/login", validateInput, async (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
   const user = await userDAO.getUserByEmail(email);
