@@ -1,4 +1,5 @@
 const validator = require("email-validator");
+const jwtUtil = require("../util/jwtUtil");
 
 const validateInput = function (req, res, next) {
   if (validator.validate(req.body.email) && req.body.password) {
@@ -8,4 +9,24 @@ const validateInput = function (req, res, next) {
   }
 };
 
-module.exports = validateInput;
+const validateRole = async (req, res, next) => {
+  if (req.headers.authorization) {
+    const token = req.headers.authorization.split(" ")[1];
+    try {
+      const payload = await jwtUtil.verifyTokenAndPayload(token);
+      req.email = payload.email;
+      req.role = payload.role;
+      next();
+    } catch (err) {
+      res.status(400).send({
+        message: "Token verification failure",
+      });
+    }
+  } else {
+    return res.status(401).send({
+      message: "Not logged in",
+    });
+  }
+};
+
+module.exports = { validateInput, validateRole };

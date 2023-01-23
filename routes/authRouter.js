@@ -3,7 +3,7 @@ const router = express.Router();
 const userDAO = require("../repository/users-dao");
 const bcrypt = require("bcrypt");
 const jwtUtil = require("../util/jwtUtil");
-const validateInput = require("../util/authUtil");
+const { validateInput } = require("../util/authUtil");
 
 router.post("/users", validateInput, async (req, res) => {
   const email = req.body.email;
@@ -14,14 +14,14 @@ router.post("/users", validateInput, async (req, res) => {
   const user = data.Item;
 
   if (user) {
-    res.status(400).send("Email is already in use");
+    res.status(400).send({ message: "Email is already in use" });
   } else {
     try {
       const hashPassword = await bcrypt.hash(password, 10);
       await userDAO.registerUsers({ email, password: hashPassword, role });
-      res.status(201).send("User created");
+      res.status(201).send({ message: "User created" });
     } catch {
-      res.status(500).send("Error");
+      res.status(500).send({ message: "Error" });
     }
   }
 });
