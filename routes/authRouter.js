@@ -31,7 +31,7 @@ router.post("/login", validateInput, async (req, res) => {
   const password = req.body.password;
   const user = await userDAO.getUserByEmail(email);
   if (!user.Item) {
-    return res.status(400).send("User does not exist");
+    return res.status(400).send({ message: "User does not exist" });
   }
   try {
     if (await bcrypt.compare(password, user.Item.password)) {
@@ -42,10 +42,10 @@ router.post("/login", validateInput, async (req, res) => {
         token: token,
       });
     } else {
-      res.send(`Email and password do not match`);
+      res.status(404).send({ message: `Email and password do not match` });
     }
   } catch {
-    res.status(500).send("Error");
+    res.status(500).send({ message: "Error" });
   }
 });
 

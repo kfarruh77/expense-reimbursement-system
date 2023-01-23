@@ -36,7 +36,7 @@ router.get("/tickets", validateEmployee, async (req, res) => {
       const data = items.Items;
       res.status(200).send(data);
     } catch {
-      res.status(500).send("Error");
+      res.status(500).send({ message: "Error" });
     }
   } else {
     if (
@@ -44,9 +44,9 @@ router.get("/tickets", validateEmployee, async (req, res) => {
       req.query.status !== "denied" &&
       req.query.status !== "approved"
     ) {
-      return res
-        .status(400)
-        .send("Please provide a proper status (pending/approved/denied)");
+      return res.status(400).send({
+        message: "Please provide a proper status (pending/approved/denied)",
+      });
     }
     try {
       const items = await ticketDAO.getTicketsByEmail(
@@ -56,7 +56,7 @@ router.get("/tickets", validateEmployee, async (req, res) => {
       const data = items.Items;
       res.status(200).send(data);
     } catch {
-      res.status(500).send("Error");
+      res.status(500).send({ message: "Error" });
     }
   }
 });

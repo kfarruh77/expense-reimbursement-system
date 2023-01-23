@@ -14,9 +14,8 @@ function createJWT(email, role) {
   );
 }
 
-jwt.verify = Promise.promisify(jwt.verify);
-
 function verifyTokenAndPayload(token) {
+  jwt.verify = Promise.promisify(jwt.verify);
   return jwt.verify(token, "secretkey");
 }
 

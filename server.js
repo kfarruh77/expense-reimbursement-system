@@ -9,7 +9,7 @@ const managerRouter = require("./routes/managerRouter");
 app.use(bodyParser.json());
 
 app.get("/", (req, res) => {
-  res.send("Welcome to Expense Reimbursement System");
+  res.send({ message: "Welcome to Expense Reimbursement System" });
 });
 
 app.use("/", authRouter);
