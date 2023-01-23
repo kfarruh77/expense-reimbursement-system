@@ -8,17 +8,7 @@ const validateInput = require("../util/authUtil");
 router.post("/users", validateInput, async (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
-  let role = req.body.role;
-
-  if (!role) {
-    role = "employee";
-  }
-
-  if (role !== "employee" && role !== "manager") {
-    return res
-      .status(400)
-      .send("Please provide a proper role (employee/manager)");
-  }
+  const role = "employee";
 
   const data = await userDAO.getUserByEmail(email);
   const user = data.Item;

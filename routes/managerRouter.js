@@ -33,35 +33,31 @@ router.get("/tickets", validateManager, async (req, res) => {
   }
 });
 
-router.patch(
-  "/validateTicket/:id/status",
-  validateManager,
-  async (req, res) => {
-    if (
-      !req.body.status ||
-      (req.body.status !== "denied" && req.body.status !== "approved")
-    ) {
-      return res
-        .status(400)
-        .send("Please provide a proper validation status (denied/approved)");
-    }
-    const item = await ticketDAO.getTicketById(req.params.id);
-    const data = item.Item;
-    if (data) {
-      if (data.status === "pending") {
-        try {
-          await ticketDAO.updateTicketStatus(req.params.id, req.body.status);
-          res.status(200).send("Ticket status successfully updated");
-        } catch {
-          res.status(500).send("Error");
-        }
-      } else {
-        res.status(405).send("Ticket status already validated");
+router.patch("/tickets/:id/status", validateManager, async (req, res) => {
+  if (
+    !req.body.status ||
+    (req.body.status !== "denied" && req.body.status !== "approved")
+  ) {
+    return res
+      .status(400)
+      .send("Please provide a proper validation status (denied/approved)");
+  }
+  const item = await ticketDAO.getTicketById(req.params.id);
+  const data = item.Item;
+  if (data) {
+    if (data.status === "pending") {
+      try {
+        await ticketDAO.updateTicketStatus(req.params.id, req.body.status);
+        res.status(200).send("Ticket status successfully updated");
+      } catch {
+        res.status(500).send("Error");
       }
     } else {
-      res.status(404).send("Ticket not found");
+      res.status(405).send("Ticket status already validated");
     }
+  } else {
+    res.status(404).send("Ticket not found");
   }
-);
+});
 
 module.exports = router;
