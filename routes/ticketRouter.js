@@ -1,7 +1,11 @@
 const express = require("express");
 const router = express.Router();
 const ticketDAO = require("../repository/ticket-dao");
-const { validateRole } = require("../util/authUtil");
+const {
+  validateRole,
+  validateStatus,
+  validateType,
+} = require("../util/authUtil");
 
 router.get("/dashboard", validateRole, (req, res) => {
   if (req.role === "employee") {
@@ -15,17 +19,19 @@ router.post("/tickets", validateRole, async (req, res) => {
   if (req.role === "employee") {
     const amount = req.body.amount;
     const description = req.body.description;
+    const type = req.body.type;
 
-    if (!(typeof amount === "number") || !description) {
-      return res
-        .status(400)
-        .send({ message: "Please provide amount and description" });
+    if (!(typeof amount === "number") || !description || !validateType(type)) {
+      return res.status(400).send({
+        message: "Please provide valid amount, description and/or type",
+      });
     }
 
     try {
       await ticketDAO.submitTicket({
         amount,
         description,
+        type,
         email: req.email,
       });
       res.status(201).send({ message: "Ticket created" });
@@ -48,19 +54,21 @@ router.get("/tickets", validateRole, async (req, res) => {
         res.status(500).send({ message: "Error" });
       }
     } else {
-      if (
-        req.query.status !== "pending" &&
-        req.query.status !== "denied" &&
-        req.query.status !== "approved"
-      ) {
+      if (req.query.status && validateStatus(req.query.status)) {
         return res.status(400).send({
           message: "Please provide a proper status (pending/approved/denied)",
+        });
+      }
+      if (req.query.type && !validateType(req.query.type)) {
+        return res.status(400).send({
+          message: "Please provide a proper type (lodging/food/travel/others)",
         });
       }
       try {
         const items = await ticketDAO.getTicketsByEmail(
           req.email,
-          req.query.status
+          req.query.status,
+          req.query.type
         );
         const data = items.Items;
         res.status(200).send(data);
@@ -73,11 +81,7 @@ router.get("/tickets", validateRole, async (req, res) => {
       const items = await ticketDAO.getAllTickets();
       res.status(200).send(items.Items);
     } else {
-      if (
-        req.query.status !== "pending" &&
-        req.query.status !== "denied" &&
-        req.query.status !== "approved"
-      ) {
+      if (validateStatus(req.query.status)) {
         return res.status(400).send({
           message: "Please provide a proper status (pending/approved/denied)",
         });

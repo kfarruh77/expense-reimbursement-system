@@ -1,7 +1,7 @@
 const aws = require("aws-sdk");
 const uuid = require("uuid");
 
-const table = "ticket";
+const table = "tickets";
 
 aws.config.update({
   region: "us-east-2",
@@ -16,6 +16,7 @@ const submitTicket = (ticket) => {
       ticket_id: uuid.v4(),
       amount: ticket.amount,
       description: ticket.description,
+      type: ticket.type,
       status: "pending",
       submittedBy: ticket.email,
     },
@@ -75,9 +76,9 @@ const getTicketById = (id) => {
   return docClient.get(params).promise();
 };
 
-const getTicketsByEmail = (email, status = "") => {
+const getTicketsByEmail = (email, status = "", type = "") => {
   let params;
-  if (!status) {
+  if (!status && !type) {
     params = {
       TableName: table,
       IndexName: "submittedBy-index",
@@ -89,7 +90,7 @@ const getTicketsByEmail = (email, status = "") => {
         ":val": email,
       },
     };
-  } else {
+  } else if (status && !type) {
     params = {
       TableName: table,
       IndexName: "submittedBy-index",
@@ -103,6 +104,40 @@ const getTicketsByEmail = (email, status = "") => {
       ExpressionAttributeValues: {
         ":val": email,
         ":val2": status,
+      },
+    };
+  } else if (!status && type) {
+    params = {
+      TableName: table,
+      IndexName: "submittedBy-index",
+      KeyConditionExpression: "#sB = :val",
+      FilterExpression: "#t = :val2",
+
+      ExpressionAttributeNames: {
+        "#sB": "submittedBy",
+        "#t": "type",
+      },
+      ExpressionAttributeValues: {
+        ":val": email,
+        ":val2": type,
+      },
+    };
+  } else {
+    params = {
+      TableName: table,
+      IndexName: "submittedBy-index",
+      KeyConditionExpression: "#sB = :val",
+      FilterExpression: "#s = :val2 and #t = :val3",
+
+      ExpressionAttributeNames: {
+        "#sB": "submittedBy",
+        "#s": "status",
+        "#t": "type",
+      },
+      ExpressionAttributeValues: {
+        ":val": email,
+        ":val2": status,
+        ":val3": type,
       },
     };
   }

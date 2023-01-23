@@ -29,4 +29,17 @@ const validateRole = async (req, res, next) => {
   }
 };
 
-module.exports = { validateInput, validateRole };
+const validateStatus = (status) => {
+  return status !== "pending" && status !== "denied" && status !== "approved";
+};
+
+const validateType = (type) => {
+  return (
+    type.toLowerCase() === "food" ||
+    type.toLowerCase() === "lodging" ||
+    type.toLowerCase() === "travel" ||
+    type.toLowerCase() === "others"
+  );
+};
+
+module.exports = { validateInput, validateRole, validateStatus, validateType };
