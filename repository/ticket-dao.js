@@ -116,10 +116,25 @@ const getTicketsByEmail = (email, status = "") => {
   return items;
 };
 
+const getAllTickets = () => {
+  const params = {
+    TableName: table,
+  };
+
+  let items;
+  do {
+    items = docClient.scan(params).promise();
+    params.ExclusiveStarterKey = items.LastEvaluatedKey;
+  } while (typeof items.LastEvaluatedKey !== "undefined");
+
+  return items;
+};
+
 module.exports = {
   submitTicket,
   getTicketsByStatus,
   updateTicketStatus,
   getTicketById,
   getTicketsByEmail,
+  getAllTickets,
 };

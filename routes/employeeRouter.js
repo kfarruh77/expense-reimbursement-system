@@ -9,7 +9,7 @@ router.get("/dashboard", validateEmployee, (req, res) => {
   });
 });
 
-router.post("/submitTicket", validateEmployee, async (req, res) => {
+router.post("/tickets", validateEmployee, async (req, res) => {
   const amount = req.body.amount;
   const description = req.body.description;
 
@@ -29,7 +29,7 @@ router.post("/submitTicket", validateEmployee, async (req, res) => {
   }
 });
 
-router.get("/viewTickets", validateEmployee, async (req, res) => {
+router.get("/tickets", validateEmployee, async (req, res) => {
   if (Object.keys(req.query).length === 0) {
     try {
       const items = await ticketDAO.getTicketsByEmail(req.email);

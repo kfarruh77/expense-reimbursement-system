@@ -5,7 +5,7 @@ const bcrypt = require("bcrypt");
 const jwtUtil = require("../util/jwtUtil");
 const validateInput = require("../util/authUtil");
 
-router.post("/register", validateInput, async (req, res) => {
+router.post("/users", validateInput, async (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
   let role = req.body.role;
