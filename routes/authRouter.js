@@ -38,11 +38,11 @@ router.post("/login", validateInput, async (req, res) => {
       const token = jwtUtil.createJWT(user.Item.email, user.Item.role);
 
       res.status(200).send({
-        message: `Welcome ${user.Item.role} ${user.Item.email}`,
+        message: `Successful Login`,
         token: token,
       });
     } else {
-      res.status(404).send({ message: `Email and password do not match` });
+      res.status(401).send({ message: `Email and password do not match` });
     }
   } catch {
     res.status(500).send({ message: "Error" });

@@ -39,7 +39,7 @@ router.post("/tickets", validateRole, async (req, res) => {
       res.status(500).send({ message: "Error" });
     }
   } else {
-    res.status(403).send({ message: "You are not an employee." });
+    res.status(403).send({ message: "You are not an employee" });
   }
 });
 
