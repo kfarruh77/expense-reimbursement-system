@@ -42,4 +42,8 @@ const validateType = (type) => {
   );
 };
 
-module.exports = { validateInput, validateRole, validateStatus, validateType };
+const validateAmount = (amount) => {
+  return !isNaN(amount);
+};
+
+module.exports = { validateInput, validateRole, validateStatus, validateType, validateAmount };

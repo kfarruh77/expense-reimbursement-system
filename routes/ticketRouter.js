@@ -1,11 +1,22 @@
 const express = require("express");
 const router = express.Router();
 const ticketDAO = require("../repository/ticket-dao");
-const {
-  validateRole,
-  validateStatus,
-  validateType,
-} = require("../util/authUtil");
+const { validateRole, validateStatus, validateType, validateAmount } = require("../util/authUtil");
+
+const multer = require("multer");
+const s3Upload = require("../repository/receipt-s3");
+
+const storage = multer.memoryStorage();
+
+const fileFilter = (req, file, cb) => {
+  if (file.mimetype.split("/")[0] === "image") {
+    cb(null, true);
+  } else {
+    cb(null, false);
+  }
+};
+
+const upload = multer({ storage, fileFilter });
 
 router.get("/dashboard", validateRole, (req, res) => {
   if (req.role === "employee") {
@@ -15,24 +26,33 @@ router.get("/dashboard", validateRole, (req, res) => {
   }
 });
 
-router.post("/tickets", validateRole, async (req, res) => {
+router.post("/tickets", validateRole, upload.single("image"), async (req, res) => {
   if (req.role === "employee") {
-    const amount = req.body.amount;
+    const amount = Number(req.body.amount);
     const description = req.body.description;
     const type = req.body.type;
+    let imgLoc;
 
-    if (!(typeof amount === "number") || !description || !validateType(type)) {
+    if (!validateAmount(amount) || !description || !validateType(type)) {
       return res.status(400).send({
         message: "Please provide valid amount, description and/or type",
       });
     }
 
     try {
+      if (req.file) {
+        result = await s3Upload(req.file);
+        imgLoc = result.Location;
+      } else {
+        imgLoc = "No image";
+      }
+
       await ticketDAO.submitTicket({
         amount,
         description,
         type,
         email: req.email,
+        receiptImage: imgLoc,
       });
       res.status(201).send({ message: "Ticket created" });
     } catch {
@@ -99,10 +119,7 @@ router.get("/tickets", validateRole, async (req, res) => {
 
 router.patch("/tickets/:id/status", validateRole, async (req, res) => {
   if (req.role === "manager") {
-    if (
-      !req.body.status ||
-      (req.body.status !== "denied" && req.body.status !== "approved")
-    ) {
+    if (!req.body.status || (req.body.status !== "denied" && req.body.status !== "approved")) {
       return res.status(400).send({
         message: "Please provide a proper validation status (denied/approved)",
       });
@@ -113,9 +130,7 @@ router.patch("/tickets/:id/status", validateRole, async (req, res) => {
       if (data.status === "pending") {
         try {
           await ticketDAO.updateTicketStatus(req.params.id, req.body.status);
-          res
-            .status(200)
-            .send({ message: "Ticket status successfully updated" });
+          res.status(200).send({ message: "Ticket status successfully updated" });
         } catch {
           res.status(500).send({ message: "Error" });
         }

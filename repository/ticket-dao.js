@@ -19,6 +19,7 @@ const submitTicket = (ticket) => {
       type: ticket.type,
       status: "pending",
       submittedBy: ticket.email,
+      receiptImage: ticket.receiptImage,
     },
   };
 
