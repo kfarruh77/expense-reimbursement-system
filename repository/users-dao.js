@@ -32,7 +32,41 @@ const getUserByEmail = (email) => {
   return docClient.get(params).promise();
 };
 
+const getAllUsers = () => {
+  const params = {
+    TableName: table,
+  };
+
+  let items;
+  do {
+    items = docClient.scan(params).promise();
+    params.ExclusiveStarterKey = items.LastEvaluatedKey;
+  } while (typeof items.LastEvaluatedKey !== "undefined");
+
+  return items;
+};
+
+const updateUserRoleByEmail = (email, role) => {
+  const params = {
+    TableName: table,
+    Key: {
+      email,
+    },
+    UpdateExpression: "set #r = :val",
+    ExpressionAttributeNames: {
+      "#r": "role",
+    },
+    ExpressionAttributeValues: {
+      ":val": role,
+    },
+  };
+
+  return docClient.update(params).promise();
+};
+
 module.exports = {
   registerUsers,
   getUserByEmail,
+  getAllUsers,
+  updateUserRoleByEmail,
 };

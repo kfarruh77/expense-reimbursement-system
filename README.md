@@ -468,3 +468,183 @@ Response Scenarios
        "message": "Not logged in"
      }
      ```
+
+### View users list endpoint
+
+Request
+
+- HTTP Method
+  - GET
+- URL
+  - /users
+- Headers
+  - Authorization: "Bearer someRandomToken123"
+- Body:
+  - None
+
+Response Scenarios
+
+1. View as a manager
+
+   - Status Code
+     - 200 OK
+   - Headers
+     - Content-Type: application/json
+   - Body
+     ```json
+     [
+       {
+         "email": "employee4@gmail.com",
+         "role": "employee"
+       },
+       {
+         "email": "user125@gmail.com",
+         "role": "manager"
+       }
+     ]
+     ```
+
+2. View as an employee
+
+   - Status Code
+     - 401 Unauthorized
+   - Headers
+     - Content-Type: application/json
+   - Body
+     ```json
+     {
+       "message": "You are not a manager"
+     }
+     ```
+
+3. Invalid token
+
+   - Status Code
+     - 400 Bad Request
+   - Headers
+     - Content-Type: application/json
+   - Body
+     ```json
+     {
+       "message": "Token verification failure"
+     }
+     ```
+
+4. Not logged in
+
+   - Status Code
+     - 401 Unauthorized
+   - Headers
+     - Content-Type: application/json
+   - Body
+     ```json
+     {
+       "message": "Not logged in"
+     }
+     ```
+
+### Change users role endpoint
+
+Request
+
+- HTTP Method
+  - Patch
+- URL
+  - /users/:email
+- Headers
+  - Authorization: "Bearer someRandomToken123"
+- Body:
+  - None
+
+Response Scenarios
+
+1. Valid change role as a manager
+
+   - Status Code
+     - 200 OK
+   - Headers
+     - Content-Type: application/json
+   - Body
+     ```json
+     {
+       "message": "User with email user@email.com became a changedRole"
+     }
+     ```
+
+2. Change role as a manager (user has pending tickets)
+
+   - Status Code
+     - 403 Forbidden
+   - Headers
+     - Content-Type: application/json
+   - Body
+     ```json
+     {
+       "message": "User has pending tickets"
+     }
+     ```
+
+3. Change role as a manager (email is invalid)
+
+   - Status Code
+     - 400 Bad Request
+   - Headers
+     - Content-Type: application/json
+   - Body
+     ```json
+     {
+       "message": "User does not exist"
+     }
+     ```
+
+4. Change your own role as a manager
+
+   - Status Code
+     - 403 Forbidden
+   - Headers
+     - Content-Type: application/json
+   - Body
+     ```json
+     {
+       "message": "You are not allowed to change your own role"
+     }
+     ```
+
+5. Change role as an employee
+
+   - Status Code
+     - 401 Unauthorized
+   - Headers
+     - Content-Type: application/json
+   - Body
+     ```json
+     {
+       "message": "You are not a manager"
+     }
+     ```
+
+6. Invalid token
+
+   - Status Code
+     - 400 Bad Request
+   - Headers
+     - Content-Type: application/json
+   - Body
+     ```json
+     {
+       "message": "Token verification failure"
+     }
+     ```
+
+7. Not logged in
+
+   - Status Code
+     - 401 Unauthorized
+   - Headers
+     - Content-Type: application/json
+   - Body
+     ```json
+     {
+       "message": "Not logged in"
+     }
+     ```

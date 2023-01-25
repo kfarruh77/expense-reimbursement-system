@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const ticketDAO = require("../repository/ticket-dao");
+const { getAllUsers, getUserByEmail, updateUserRoleByEmail } = require("../repository/users-dao");
 const { validateRole, validateStatus, validateType, validateAmount } = require("../util/authUtil");
 
 const multer = require("multer");
@@ -140,6 +141,42 @@ router.patch("/tickets/:id/status", validateRole, async (req, res) => {
     } else {
       res.status(404).send({ message: "Ticket not found" });
     }
+  } else {
+    res.status(401).send({ message: "You are not a manager" });
+  }
+});
+
+router.get("/users", validateRole, async (req, res) => {
+  if (req.role === "manager") {
+    const items = await getAllUsers();
+    const data = items.Items;
+    const filteredData = data.map(({ password, ...rest }) => rest);
+    res.status(200).send(filteredData);
+  } else {
+    res.status(401).send({ message: "You are not a manager" });
+  }
+});
+
+router.patch("/users/:email", validateRole, async (req, res) => {
+  if (req.role === "manager") {
+    const email = req.params.email;
+    const user = await getUserByEmail(email);
+    if (!user.Item) {
+      return res.status(400).send({ message: "User does not exist" });
+    }
+    const tickets = (await ticketDAO.getTicketsByEmail(email)).Items;
+    if (tickets?.some((ticket) => ticket.status === "pending")) {
+      return res.status(403).send({ message: "User has pending tickets" });
+    }
+    if (email === req.email) {
+      return res.status(403).send({ message: "You are not allowed to change your own role" });
+    }
+    let roleChange = "manager";
+    if (user.Item.role === "manager") {
+      roleChange = "employee";
+    }
+    await updateUserRoleByEmail(email, roleChange);
+    res.status(200).send({ message: `User with email ${email} became a ${roleChange}` });
   } else {
     res.status(401).send({ message: "You are not a manager" });
   }
