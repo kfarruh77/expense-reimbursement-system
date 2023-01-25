@@ -133,12 +133,12 @@ Response Scenarios
 Request
 
 - HTTP Method
-  - POST
+ - POST
 - URL
-  - /tickets
+ - /tickets
 - Headers
-  - Authorization: "Bearer someRandomToken123"
-  - Content-Type: multipart/form-data
+ - Authorization: "Bearer someRandomToken123"
+ - Content-Type: multipart/form-data
 - Body
 
   ```form-data
