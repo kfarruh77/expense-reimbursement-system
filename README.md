@@ -140,7 +140,6 @@ Request
   - Authorization: "Bearer someRandomToken123"
   - Content-Type: multipart/form-data
 - Body
-
   ```form-data
   amount: someNumber
   description: "someDescription"
@@ -225,9 +224,9 @@ Request
   - /tickets
 - Headers
   - Authorization: "Bearer someRandomToken123"
-- Body: None
+- Body: 
+  - None
 - Parameters
-
   | Name   | DataType | Required/Optional |
   | ------ | -------- | ----------------- |
   | status | string   | optional          |
