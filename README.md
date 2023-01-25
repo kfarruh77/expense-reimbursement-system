@@ -224,9 +224,9 @@ Request
   - /tickets
 - Headers
   - Authorization: "Bearer someRandomToken123"
-- Body: None
+- Body: 
+  - None
 - Parameters
-
   | Name   | DataType | Required/Optional |
   | ------ | -------- | ----------------- |
   | status | string   | optional          |
