@@ -59,7 +59,7 @@ router.post("/tickets", validateRole, upload.single("image"), async (req, res) =
       res.status(500).send({ message: "Error" });
     }
   } else {
-    res.status(403).send({ message: "You are not an employee" });
+    res.status(401).send({ message: "You are not an employee" });
   }
 });
 
@@ -135,13 +135,13 @@ router.patch("/tickets/:id/status", validateRole, async (req, res) => {
           res.status(500).send({ message: "Error" });
         }
       } else {
-        res.status(405).send({ message: "Ticket status already validated" });
+        res.status(403).send({ message: "Ticket status already validated" });
       }
     } else {
       res.status(404).send({ message: "Ticket not found" });
     }
   } else {
-    res.status(403).send({ message: "You are not a manager" });
+    res.status(401).send({ message: "You are not a manager" });
   }
 });
 
