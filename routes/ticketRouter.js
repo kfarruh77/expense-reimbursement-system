@@ -162,7 +162,7 @@ router.patch("/users/:email", validateRole, async (req, res) => {
     const email = req.params.email;
     const user = await getUserByEmail(email);
     if (!user.Item) {
-      return res.status(400).send({ message: "User does not exist" });
+      return res.status(404).send({ message: "User does not exist" });
     }
     const tickets = (await ticketDAO.getTicketsByEmail(email)).Items;
     if (tickets?.some((ticket) => ticket.status === "pending")) {
@@ -176,7 +176,7 @@ router.patch("/users/:email", validateRole, async (req, res) => {
       roleChange = "employee";
     }
     await updateUserRoleByEmail(email, roleChange);
-    res.status(200).send({ message: `User with email ${email} became a ${roleChange}` });
+    res.status(200).send({ message: `User role changed` });
   } else {
     res.status(401).send({ message: "You are not a manager" });
   }
