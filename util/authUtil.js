@@ -30,7 +30,7 @@ const validateRole = async (req, res, next) => {
 };
 
 const validateStatus = (status) => {
-  return status !== "pending" && status !== "denied" && status !== "approved";
+  return status === "pending" || status === "denied" || status === "approved";
 };
 
 const validateType = (type) => {

@@ -75,7 +75,7 @@ router.get("/tickets", validateRole, async (req, res) => {
         res.status(500).send({ message: "Error" });
       }
     } else {
-      if (req.query.status && validateStatus(req.query.status)) {
+      if (req.query.status && !validateStatus(req.query.status)) {
         return res.status(400).send({
           message: "Please provide a proper status (pending/approved/denied)",
         });
@@ -102,7 +102,7 @@ router.get("/tickets", validateRole, async (req, res) => {
       const items = await ticketDAO.getAllTickets();
       res.status(200).send(items.Items);
     } else {
-      if (validateStatus(req.query.status)) {
+      if (!validateStatus(req.query.status)) {
         return res.status(400).send({
           message: "Please provide a proper status (pending/approved/denied)",
         });

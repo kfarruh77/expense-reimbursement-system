@@ -8,6 +8,10 @@ To start the application, simply run npm install to install all necessary node p
 - AWS_SECRET_ACCESS_KEY
 - AWS_DEFAULT_REGION
 
+## Testing
+
+To test the application, run `npm test`. The testing is done only the functions that validate the properties of the reimbursement tickets. Testing is done through the npm package jest.
+
 ## Endpoints
 
 ### Register Endpoint
@@ -224,13 +228,13 @@ Request
   - /tickets
 - Headers
   - Authorization: "Bearer someRandomToken123"
-- Body: 
+- Body:
   - None
 - Parameters
-  | Name   | DataType | Required/Optional |
+  | Name | DataType | Required/Optional |
   | ------ | -------- | ----------------- |
-  | status | string   | optional          |
-  | type   | string   | optional          |
+  | status | string | optional |
+  | type | string | optional |
 
 Response Scenarios
 
