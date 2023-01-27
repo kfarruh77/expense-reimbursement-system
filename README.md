@@ -2,7 +2,7 @@
 
 ## Startup
 
-To start the application, simply run npm install to install all necessary node packages, and then `node server.js` to start the server. The server is configured to run on PORT 3000, but you can change the PORT number to something else. You also need to create environment variables to be able to connect to the AWS (for the DynamoDB and S3 bucket access):
+To start the application, simply run npm install to install all necessary node packages, and then `nmp run devStart` to start the server. The server is configured to run on PORT 3000, but you can change the PORT number to something else. You also need to create environment variables to be able to connect to the AWS (for the DynamoDB and S3 bucket access):
 
 - AWS_ACCESS_KEY_ID
 - AWS_SECRET_ACCESS_KEY
