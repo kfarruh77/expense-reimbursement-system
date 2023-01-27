@@ -3,12 +3,13 @@ const router = express.Router();
 const ticketDAO = require("../repository/ticket-dao");
 const { getAllUsers, getUserByEmail, updateUserRoleByEmail } = require("../repository/users-dao");
 const { validateRole, validateStatus, validateType, validateAmount } = require("../util/authUtil");
-
 const multer = require("multer");
 const s3Upload = require("../repository/receipt-s3");
 
+// store uploaded image in the memory
 const storage = multer.memoryStorage();
 
+// check if uploaded file is an image
 const fileFilter = (req, file, cb) => {
   if (file.mimetype.split("/")[0] === "image") {
     cb(null, true);
@@ -17,6 +18,7 @@ const fileFilter = (req, file, cb) => {
   }
 };
 
+// upload the image to the memory
 const upload = multer({ storage, fileFilter });
 
 router.get("/dashboard", validateRole, (req, res) => {
@@ -27,6 +29,7 @@ router.get("/dashboard", validateRole, (req, res) => {
   }
 });
 
+// submit tickets route
 router.post("/tickets", validateRole, upload.single("image"), async (req, res) => {
   if (req.role === "employee") {
     const amount = Number(req.body.amount);
@@ -64,8 +67,11 @@ router.post("/tickets", validateRole, upload.single("image"), async (req, res) =
   }
 });
 
+// view tickets route
 router.get("/tickets", validateRole, async (req, res) => {
+  // if user is employee get tickets by user's email
   if (req.role === "employee") {
+    // check if user provided any queries
     if (Object.keys(req.query).length === 0) {
       try {
         const items = await ticketDAO.getTicketsByEmail(req.email);
@@ -97,7 +103,9 @@ router.get("/tickets", validateRole, async (req, res) => {
         res.status(500).send({ message: "Error" });
       }
     }
-  } else {
+  }
+  // if user is a manager get all tickets
+  else {
     if (Object.keys(req.query).length === 0) {
       const items = await ticketDAO.getAllTickets();
       res.status(200).send(items.Items);
@@ -118,6 +126,7 @@ router.get("/tickets", validateRole, async (req, res) => {
   }
 });
 
+// update ticket status route
 router.patch("/tickets/:id/status", validateRole, async (req, res) => {
   if (req.role === "manager") {
     if (!req.body.status || (req.body.status !== "denied" && req.body.status !== "approved")) {
@@ -146,6 +155,7 @@ router.patch("/tickets/:id/status", validateRole, async (req, res) => {
   }
 });
 
+// view users list route
 router.get("/users", validateRole, async (req, res) => {
   if (req.role === "manager") {
     const items = await getAllUsers();
@@ -157,6 +167,7 @@ router.get("/users", validateRole, async (req, res) => {
   }
 });
 
+// update user's role route
 router.patch("/users/:email", validateRole, async (req, res) => {
   if (req.role === "manager") {
     const email = req.params.email;

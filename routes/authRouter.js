@@ -5,18 +5,20 @@ const bcrypt = require("bcrypt");
 const jwtUtil = require("../util/jwtUtil");
 const { validateInput } = require("../util/authUtil");
 
+// Register route
 router.post("/users", validateInput, async (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
   const role = "employee";
 
+  // check if email already exists
   const data = await userDAO.getUserByEmail(email);
   const user = data.Item;
-
   if (user) {
     res.status(400).send({ message: "Email is already in use" });
   } else {
     try {
+      // hash password with bcrypt
       const hashPassword = await bcrypt.hash(password, 10);
       await userDAO.registerUsers({ email, password: hashPassword, role });
       res.status(201).send({ message: "User created" });
@@ -26,6 +28,7 @@ router.post("/users", validateInput, async (req, res) => {
   }
 });
 
+// Login route
 router.post("/login", validateInput, async (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
