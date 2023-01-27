@@ -38,12 +38,7 @@ const validateStatus = (status) => {
 
 // check if type is in [food, lodging, others, travel]
 const validateType = (type) => {
-  return (
-    type.toLowerCase() === "food" ||
-    type.toLowerCase() === "lodging" ||
-    type.toLowerCase() === "travel" ||
-    type.toLowerCase() === "others"
-  );
+  return type === "food" || type === "lodging" || type === "travel" || type === "others";
 };
 
 // check if amount is a number
